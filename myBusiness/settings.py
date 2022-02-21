@@ -77,10 +77,16 @@ WSGI_APPLICATION = 'myBusiness.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
+
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE':'django.db.backends.postgresql_psycopg2',
+        'NAME':'test1',
+        'USER':'test1',
+        'PASSWORD':'test',
+        'HOST':'localhost',
+        'PORT':'5432',
     }
+
 }
 
 
@@ -126,19 +132,5 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-SWAGGER_SETTINGS = {
-    'SHOW_REQUEST_HEADERS': True,
-    'SECURITY_DEFINITIONS': {
-        'Bearer': {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header'
-        }
-    },
-    'is_authenticated': True,
-    'unauthenticated_user':None,
-}
 
 AUTH_USER_MODEL = "accounts.User" 
