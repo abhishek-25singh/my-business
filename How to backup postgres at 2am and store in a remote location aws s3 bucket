@@ -1,0 +1,90 @@
+    
+    Create a script that automates the PostgreSQL backup directory creation
+    Upload/sync the backups with Amazon S3
+    Cron will run this command every day (to back up)
+
+Generate a shell script which will dump the PostgreSQL database
+
+	cd ~
+	mkdir scripts
+	cd scripts
+	nano db_backup.sh
+
+
+Copy and paste the script below to it
+
+	#!/bin/bash
+	DIR=`date +%d-%m-%y`
+	DEST=~/db_backups/$DIR
+	mkdir $DEST
+
+	PGPASSWORD='postgres_password' pg_dump --inserts --column-inserts --username=postgres_user --host=postgres_host --port=postgres_port postgres_database_name > dbbackup.sql
+
+
+Now chmod the script to allow it to for execution
+
+	chmod +x ~/scripts/db_backup.sh
+
+
+Create a shell script which sync the backups with Amazon S3
+
+	nano db_sync.sh
+
+
+Copy and paste the script below to it
+
+	#!/bin/bash
+	/usr/local/bin/aws s3 sync ~/db_backups s3://my-bucket-name
+
+
+Now chmod the script to allow it for execution
+
+	chmod +x ~/scripts/db_sync.sh
+
+
+Creating the folder in Amazon S3 for the database dumps
+
+	cd ~
+	mkdir db_backups
+
+
+Before installing the AWS CLI you need to installpython-pi. Type the following commands:
+
+	apt-get update
+	apt-get -y install python-pip
+	curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
+
+
+Install the AWS CLI
+
+	pip install awscli
+
+
+How to set up AWS key & Secret
+Configuration and credential file settings
+
+	cd ~
+	mkdir .aws
+	nano ~/.aws/config
+
+
+Paste in key_id and secret_access_key as shown below
+
+	[default]
+	aws_access_key_id=AKIAIOSFODNN7EXAMPLE
+	aws_secret_access_key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+
+
+
+How to set up Cron (to automate the process)
+
+	crontab -e
+
+
+Paste the below commands at the bottom to automate the process
+
+	0 0 * * * ~/scripts/db_backup.sh # take a backup every midnight
+	0 2 * * * ~/scripts/db_sync.sh # upload the backup at 2am
+
+
+This way the backup script will run and also sync with Amazon S3 daily.
